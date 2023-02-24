@@ -15,16 +15,16 @@ class TSException(Exception):
 
     def __init__(self, inErrorMessage: str):
         try:
+            self.__mErrorPrefix = 'TSException'
             if len(inErrorMessage) == 0:
                 raise TSException('Inception of Exception. Empty Error message')
-            self.__mErrorMessage = inErrorMessage
+            super(TSException, self).__init__(
+                f'{self.__mErrorPrefix} - {inErrorMessage}\n'
+                f'{self.getFluffyMessage()}'
+            )
         except TSException as e:
             print(e)
             sys.exit(1)
-
-    def __str__(self):
-        return f'[TSException] - {self.__mErrorMessage}\n' \
-               f'{self.getFluffyMessage()}'
 
     @staticmethod
     def getFluffyMessage():
