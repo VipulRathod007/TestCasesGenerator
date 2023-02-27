@@ -1,0 +1,27 @@
+{
+    "ConnectionString": "DSN=Microsoft WooCommerce;",
+    "DifferenceFindMode": {
+        "CompareTwoRevisions": [],
+        "ModifiedMDEFLocation": "c:\\Users\\vrathod\\Perforce\\VR_WPT\\Drivers\\Memphis\\DataSources\\Eloqua\\Common\\Trunk\\Main\\MDEF\\driver-d.mdef",
+        "IsFirstRevision": true
+    },
+    "PerforceLocation": {
+        "MDEFLocation": "//Drivers/Memphis/DataSources/WooCommerce/Common/Trunk/Main/MDEF/driver-d.mdef",
+        "TestDefinitionsLocation": "//Drivers/Memphis/DataSources/WooCommerce/Common/Trunk/Main/Tests/TestDefinitions/"
+    },
+    "TestSuite": {
+        "Integration": {
+            "SQL_SELECT_ALL": "SQL_SELECT_ALL"
+        },
+        "SQL": {
+            "SQL_AND_OR": "SQL_AND_OR",
+            "SQL_GROUP_BY": "SQL_GROUP_BY",
+            "SQL_IN_BETWEEN": "SQL_IN_BETWEEN",
+            "SQL_LIKE": "SQL_LIKE",
+            "SQL_ORDER_BY": "SQL_ORDER_BY",
+            "SQL_SELECT_TOP": "SQL_SELECT_TOP"
+        }
+    },
+    "ExternalArguments": {
+    }
+}

@@ -10,8 +10,6 @@ from enum import Enum
 from .TSException import TSException
 
 
-# from Generator import TestSetGenerator, ResultSetGenerator
-
 class TSExecutionMode(Enum):
     """
     Enum class represent Execution modes

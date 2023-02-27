@@ -122,19 +122,17 @@ class Perforce:
         """
         Creates a new label.
         """
-        # TODO: Add a check not to create/edit new one if already exists
-        sys.exit(1)
-        # try:
-        #     with self.__mP4Instance.connect():
-        #         newLabel = self.__mP4Instance.run_label('-o', inLabelName)[0]
-        #         newLabel['Description'] = inLabelDescription
-        #         newLabel['Options'] = inOptions
-        #         newLabel['Owner'] = self.__mP4User
-        #         newLabel['View'] = inViews.copy()
-        #         self.__mP4Instance.input = newLabel
-        #         self.__mP4Instance.run_label('-i')
-        # except P4Exception as p4e:
-        #     raise PerforceException("Perforce connection error " + str(p4e))
+        try:
+            with self.__mP4Instance.connect():
+                newLabel = self.__mP4Instance.run_label('-o', inLabelName)[0]
+                newLabel['Description'] = inLabelDescription
+                newLabel['Options'] = inOptions
+                newLabel['Owner'] = self.__mP4User
+                newLabel['View'] = inViews.copy()
+                self.__mP4Instance.input = newLabel
+                self.__mP4Instance.run_label('-i')
+        except P4Exception as p4e:
+            raise PerforceException("Perforce connection error " + str(p4e))
 
     def tagToLabel(self, inLabelName: str, inView: str, inRevision: str = 'head'):
         revision = f'#{inRevision}' if inRevision == 'head' else f'@{inRevision}'

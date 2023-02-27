@@ -21,11 +21,6 @@ def assure(inParam: dict, inArg: str, ignoreError: bool = False):
             raise KeyError(f"Invalid Expression: {inParam}[{inArg}]")
 
 
-def getEnvVariableValue(inVarName: str):
-    """Returns Environment Variable's Value from the given key"""
-    return assure(dict(os.environ), inVarName)
-
-
 def checkFilesInDir(inDirPath: str, inFiles: list):
     """
     Checks whether given files are present or not in the specified Directory \n
@@ -59,3 +54,23 @@ def copyFilesInDir(inSrcDirPath: str, inDestDirPath: str, inFiles: list):
         print(f'Invalid arguments: {inSrcDirPath} or {inDestDirPath}')
         return False
 
+
+def getEnvVariableValue(inVarName: str):
+    """Returns Environment Variable's Value from the given key"""
+    return assure(dict(os.environ), inVarName)
+
+
+def isNoneOrEmpty(inVal) -> bool:
+    """Checks if the given value is None or Empty"""
+    if isinstance(inVal, str):
+        return inVal is None or len(inVal) == 0
+    elif isinstance(inVal, dict):
+        return inVal is None or \
+               len(inVal) == 0 or \
+               all(map(lambda x, y: isNoneOrEmpty(x) and isNoneOrEmpty(y), inVal.items()))
+    elif isinstance(inVal, list):
+        return inVal is None or \
+               len(inVal) == 0 or \
+               all(map(lambda x: isNoneOrEmpty(x), inVal))
+    else:
+        return isNoneOrEmpty(str(inVal))
