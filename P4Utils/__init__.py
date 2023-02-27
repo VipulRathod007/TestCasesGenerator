@@ -5,3 +5,4 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 # List the classes to be exposed
+from ._P4 import Perforce, PerforceException

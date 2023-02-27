@@ -1,15 +1,16 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-import sys
-
 """ @file _P4.py                                                                                                     """
 """ Contains the definition of Perforce class                                                                        """
 """ Never let Wrappers around wrappers wrap(hides) the originality                                                   """
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 import os
+import sys
 import subprocess
 
 from P4 import P4, P4Exception
+
+from GenUtility import assure
 
 
 class Perforce:
@@ -205,6 +206,49 @@ class Perforce:
                 self.__mP4Instance.run('shelve', '--parallel=0', '-f', '-Af', '-c', str(inCLNum))
         except P4Exception as p4e:
             raise PerforceException(f'Perforce Exception: {p4e}')
+
+    def getLatestRevisionNumber(self, inFilePath: str):
+        """
+        Finds the latest revision number of the file \n
+        :param inFilePath: Path of the file to get latest revision number
+        :return: Returns the latest revision number of the specified file
+        """
+        if os.path.exists(inFilePath):
+            try:
+                with self.__mP4Instance.connect():
+                    result = self.__mP4Instance.run('fstat', os.path.abspath(inFilePath))[0]
+                    return int(assure(result, 'headRev'))
+            except P4Exception as p4e:
+                raise PerforceException(f'Perforce Exception: {p4e}')
+        else:
+            raise FileNotFoundError(f"{inFilePath} is an invalid location")
+
+    def downloadRevision(self, inFilePath: str, inDownloadPath: str, inFileRevision: int = None):
+        """
+        Gets a file from Perforce with the latest revision if revision not specified \n
+        :param inDownloadPath: Path to download the revision of file
+        :param inFilePath: Path of the file to get revision
+        :param inFileRevision: Revision Number of a file to get
+        :return: Returns the Absolute Path of the File if downloaded successfully
+        """
+        try:
+            inFileName = os.path.splitext(os.path.basename(os.path.abspath(inFilePath)))[0]
+            inFileExtension = os.path.splitext(os.path.basename(os.path.abspath(inFilePath)))[1]
+            outFileName = None
+
+            with self.__mP4Instance.connect():
+                if inFileRevision is not None:
+                    outFileName = f"{inFileName}_{inFileRevision}{inFileExtension}"
+                    self.__mP4Instance.run('print', '-o', os.path.join(inDownloadPath, outFileName),
+                                           f"{os.path.abspath(inFilePath)}#{inFileRevision}")
+                else:
+                    outFileName = f"{inFileName}_Head{inFileExtension}"
+                    self.__mP4Instance.run('print', '-o', os.path.join(inDownloadPath, outFileName),
+                                           os.path.abspath(inFilePath))
+            return os.path.abspath(os.path.join(inDownloadPath, outFileName))
+        except FileNotFoundError:
+            print(f"{inFilePath} is an invalid location")
+            sys.exit(1)
 
 
 class PerforceException(Exception):
