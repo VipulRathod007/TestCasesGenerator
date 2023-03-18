@@ -74,3 +74,14 @@ def isNoneOrEmpty(inVal) -> bool:
                all(map(lambda x: isNoneOrEmpty(x), inVal))
     else:
         return isNoneOrEmpty(str(inVal))
+
+
+def writeFile(inContent: str, inPath: str, inMode: str = 'w'):
+    """
+    Writes to the file
+    :param inContent: Content to write
+    :param inPath: Path of the file
+    :param inMode: Mode to write to the file. Default 'w'
+    """
+    with open(inPath, inMode) as file:
+        file.write(inContent.replace('\t', '    '))

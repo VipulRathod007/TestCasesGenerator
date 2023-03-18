@@ -1,7 +1,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""" @file TSInputReader.py                                                                                           """
+""" @file _TSInputReader.py                                                                                          """
 """ Contains the definition of TSInputReader class                                                                   """
-""" Coding makes me input efforts and outputs extraordinary results                                                  """
+""" Coding makes you input efforts and outputs extraordinary results                                                 """
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 import os
@@ -77,6 +77,8 @@ class TSInput:
             elif Constants.TestSuite.value == key:
                 assert isinstance(val, dict)
                 self.__mTestDefinitions = dict()
+                # TODO: Using P4 here is an overkill.
+                #       This must be responsible for reading values and perform basic validations only
                 p4Inst = Perforce()
                 testDefinitionPath = p4Inst.transformPath(self.__mTestDefinitionsLocation)
                 for name, testDefs in val.items():

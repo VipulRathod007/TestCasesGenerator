@@ -8,4 +8,3 @@
 from .TSRunner import TSExecutionMode
 from .TSRunner import TSRunner
 from .TSException import TSException
-from .TSInputReader import TSInput

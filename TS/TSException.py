@@ -1,7 +1,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """ @file TSException.py                                                                                             """
 """ Contains the definition of TSException class                                                                     """
-""" Every Code does the wonder or make you wonder ;)                                                                 """
+""" Every Code does the wonder or makes you wonder ;)                                                                """
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 import random
@@ -29,11 +29,11 @@ class TSException(Exception):
     @staticmethod
     def getFluffyMessage():
 
-        s_FluffySays = [
+        fluffySays = [
             "Buddy, It's high time you've a coffee break",
             "Do what you love, love what you do!",
             "Ahhh, Humans after all...!",
             "Sometimes you play with code and sometimes code... ;)"
         ]
 
-        return random.choice(s_FluffySays)
+        return random.choice(fluffySays)

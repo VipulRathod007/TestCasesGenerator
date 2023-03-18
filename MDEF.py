@@ -516,14 +516,14 @@ class Table(Parsable):
         return self.__mVirtualTables
 
     @property
-    def VirtualTableNames(self) -> list:
+    def VirtualTableNames(self) -> list[str]:
         vTableNames = list()
         for vTable in self.__mVirtualTables:
             vTableNames.append(vTable.FullName)
         return vTableNames
 
     @property
-    def FullName(self):
+    def FullName(self) -> str:
         return f'{self.__mTableSchemaName}{MDEF.cleanName(self.__mName)}'
 
 
@@ -606,6 +606,10 @@ class MDEF(Parsable):
         return self.__mTables
 
     @property
+    def VirtualTables(self):
+        return self.__mVirtualTables
+
+    @property
     def TableNames(self) -> list[str]:
         return self.__mParentTableNames
 
@@ -642,6 +646,6 @@ class MDEF(Parsable):
         for table in self.Tables:
             if table.FullName in solicit.TableNames:
                 solicit.Tables.append(table)
-                solicit.__mVirtualTableNames.extend(table.VirtualTableNames)
-                solicit.__mVirtualTables.extend(table.VirtualTables)
+                solicit.VirtualTableNames.extend(table.VirtualTableNames)
+                solicit.VirtualTables.extend(table.VirtualTables)
         return solicit
