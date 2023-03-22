@@ -19,7 +19,8 @@ class TSAbstractTestSet(ABC):
     """Represents TSAbstractTestSet class that deals with all the common functionality its child classes will provide"""
 
     @abstractmethod
-    def __init__(self, inTestSuite: str, inTestSets: list[str], inTouchstoneRoot: str, inMDEF: MDEF):
+    def __init__(self, inTestSuite: str, inTestSets: dict, inTouchstoneRoot: str, inMDEF: MDEF, inResultSet: dict):
+        # TODO: Create class for TestSuite/TestSet provide more input i.e SetFile or ID as part of instance
         if isNoneOrEmpty(inTestSuite) or isNoneOrEmpty(inTestSets) or \
                 isNoneOrEmpty(inTouchstoneRoot) or isNoneOrEmpty(inMDEF):
             raise TSException('Empty inputs are not considered')
@@ -29,11 +30,10 @@ class TSAbstractTestSet(ABC):
         self.mTestSuite = inTestSuite
         self.mTestSets = inTestSets
         self.mTouchstoneRoot = inTouchstoneRoot
-        try:
-            self.mP4Inst = Perforce()
-        except PerforceException as error:
-            print(f'Error: {error}')
-            sys.exit(1)
+
+    @abstractmethod
+    def create(self):
+        pass
 
     def createTestSuite(self):
         """Creates TestSuite.xml for given test-suite"""

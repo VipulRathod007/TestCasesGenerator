@@ -50,10 +50,10 @@ class DBWrapper:
         if self.__mCursor is not None:
             self.__mCursor.close()
 
-    def init(self, inCachedRows: int) -> list[DBTable]:
+    def init(self, inCachedRows: int = None) -> list[DBTable]:
         """
         Initializes all the tables with Column, Primary and Foreign keys data
-        :param inCachedRows: No of rows' data to cache in a column
+        :param inCachedRows: No of rows' data to cache in a column (Default=None, to cache all)
         """
         allTables = list()
         for tableMeta in self.getTablesNames():
@@ -66,7 +66,7 @@ class DBWrapper:
             for colData in self.getColumns(table.mName, table.mCatalog, table.mSchema):
                 table.mColumns.append(DBColumn(colData[3], colData[5]))
             # Populates Column Values
-            for rowData in self.getTableData(table.FullName, 100):
+            for rowData in self.getTableData(table.FullName, inCachedRows):
                 assert len(rowData) == len(table.mColumns)
                 for idx, value in enumerate(rowData):
                     table.mColumns[idx].mValues.append(value)
@@ -112,19 +112,20 @@ class DBWrapper:
             sys.exit(1)
         return self.Cursor.columns(inTable, inCatalog, inSchema).fetchall()
 
-    def getTableData(self, inTable: str, inLimitRows: int) -> list:
+    def getTableData(self, inTable: str, inLimitRows: int = None) -> list:
         """
         Selects all the data of the given table
         Equivalent to SELECT * FROM TABLE
-        :param inLimitRows: No. of rows to fetch from given table
+        :param inLimitRows: No. of rows to fetch from given table (Default=None, to select all)
         :param inTable: Full qualified table name (Catalog.Schema.Table)
         :return: Table's data -> list(values)
         """
         if isNoneOrEmpty(inTable):
             print(f'Error: Empty Table data provided to {self.__class__}')
             sys.exit(1)
-        resultSet = self.Cursor.execute(f'SELECT * FROM {inTable}').fetchmany(inLimitRows)
-        return resultSet
+        resultSet = self.Cursor.execute(f'SELECT * FROM {inTable}')
+        filteredSet = resultSet.fetchmany(inLimitRows) if inLimitRows is not None else resultSet.fetchall()
+        return filteredSet
 
     def getPrimaryKeyNames(self, inTableName: str, inCatalogName: str, inSchemaName: str) -> list:
         """

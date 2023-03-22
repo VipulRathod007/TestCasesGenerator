@@ -4,7 +4,9 @@
 """ Code re-use is a thing                                                                                           """
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+import errno
 import os
+import sys
 from shutil import copy
 
 
@@ -55,6 +57,16 @@ def copyFilesInDir(inSrcDirPath: str, inDestDirPath: str, inFiles: list):
         return False
 
 
+def createDir(inDirPath: str, inMode: int = 0o777):
+    """Creates the absent directories from the given path."""
+    try:
+        os.makedirs(inDirPath, inMode)
+    except OSError as err:
+        # Re-raise the error unless it's for already existing directory
+        if err.errno != errno.EEXIST or not os.path.isdir(inDirPath):
+            raise
+
+
 def getEnvVariableValue(inVarName: str):
     """Returns Environment Variable's Value from the given key"""
     return assure(dict(os.environ), inVarName)
@@ -83,5 +95,25 @@ def writeFile(inContent: str, inPath: str, inMode: str = 'w'):
     :param inPath: Path of the file
     :param inMode: Mode to write to the file. Default 'w'
     """
-    with open(inPath, inMode) as file:
-        file.write(inContent.replace('\t', '    '))
+    try:
+        with open(inPath, inMode) as file:
+            file.write(inContent.replace('\t', '    '))
+    except Exception as error:
+        print(f'Error: {error}')
+        sys.exit(1)
+
+
+def readFile(inPath: str, inMode: str = 'r'):
+    """
+    Reads from the file
+    :param inPath: Path of the file
+    :param inMode: Mode to write to the file. Default 'r'
+    """
+    content = None
+    try:
+        with open(inPath, inMode) as file:
+            content = file.read()
+    except Exception as error:
+        print(f'Error: {error}')
+        sys.exit(1)
+    return content

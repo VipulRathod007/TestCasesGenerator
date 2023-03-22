@@ -221,32 +221,24 @@ class Perforce:
         else:
             raise FileNotFoundError(f"{inFilePath} is an invalid location")
 
-    def downloadRevision(self, inFilePath: str, inDownloadPath: str, inFileRevision: int = None):
+    def readRevision(self, inFilePath: str, inFileRevision: int = None):
         """
-        Gets a file from Perforce with the latest revision if revision not specified \n
-        :param inDownloadPath: Path to download the revision of file
-        :param inFilePath: Path of the file to get revision
+        Reads a file from Perforce with the latest revision if revision not specified \n
+        :param inFilePath: Perforce Path of the file to get revision
         :param inFileRevision: Revision Number of a file to get
-        :return: Returns the Absolute Path of the File if downloaded successfully
+        :return: Returns the File content
         """
         try:
-            inFileName = os.path.splitext(os.path.basename(os.path.abspath(inFilePath)))[0]
-            inFileExtension = os.path.splitext(os.path.basename(os.path.abspath(inFilePath)))[1]
-            outFileName = None
-
             with self.__mP4Instance.connect():
                 if inFileRevision is not None:
-                    outFileName = f"{inFileName}_{inFileRevision}{inFileExtension}"
-                    self.__mP4Instance.run('print', '-o', os.path.join(inDownloadPath, outFileName),
-                                           f"{os.path.abspath(inFilePath)}#{inFileRevision}")
+                    fileContent = subprocess.run(
+                        ['print', '-q', f"{os.path.abspath(inFilePath)}#{inFileRevision}"]
+                    ).stdout.decode()
                 else:
-                    outFileName = f"{inFileName}_Head{inFileExtension}"
-                    self.__mP4Instance.run('print', '-o', os.path.join(inDownloadPath, outFileName),
-                                           os.path.abspath(inFilePath))
-            return os.path.abspath(os.path.join(inDownloadPath, outFileName))
-        except FileNotFoundError:
-            print(f"{inFilePath} is an invalid location")
-            sys.exit(1)
+                    fileContent = subprocess.run(['print', '-q', os.path.abspath(inFilePath)]).stdout.decode()
+            return fileContent
+        except P4Exception as p4e:
+            raise PerforceException("Perforce connection error " + str(p4e))
 
 
 class PerforceException(Exception):

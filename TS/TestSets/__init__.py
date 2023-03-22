@@ -5,3 +5,5 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 # List the classes to be exposed
+from ._TSIntegrationTestSets import TSIntegrationTestSets
+from ._TSTestSetFactory import TSTestSetFactory

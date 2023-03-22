@@ -69,6 +69,8 @@ class TSInput:
                             self.__mModifiedMDEFLocation = subVal
                     elif Constants.IsFirstRevision.value == subKey:
                         self.__mIsFirstRevision = bool(subVal == 'true')
+                        # Use `ModifiedMDEFLocation` mode with First revision
+                        self.__mDifferenceFindMode = Constants.ModifiedMDEFLocation.value
 
             elif Constants.PerforceLocation.value == key:
                 self.__mMDEFLocation = assure(val, Constants.MDEFLocation.value)
