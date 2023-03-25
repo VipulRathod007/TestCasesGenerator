@@ -22,13 +22,23 @@ class DBColumn:
             print(f'Error: Empty input to {self.__class__}')
         self.mName = inName
         self.mType = inType
-        self.mValues = list()
+        self.__mValues = list()
+
+    def addToResultSet(self, inValue):
+        """Saves the result-set value after converting based on the data type"""
+        if 'char' in self.mType.lower():
+            self.__mValues.append(f"'{str(inValue)}'")
+        elif 'time' in self.mType.lower() or 'date' in self.mType.lower():
+            # TODO: Fix me
+            pass
+        else:
+            self.__mValues.append(inValue)
+
+    def getResultSet(self):
+        return self.__mValues
 
     def setResultSet(self, inValues: list[str]):
         pass
-
-    def getResultSet(self):
-        return self.mValues
 
 
 class DBTable:
@@ -38,8 +48,8 @@ class DBTable:
         self.mCatalog = inCatalog
         self.mSchema = inSchema
         self.mName = inName
-        self.mPrimaryKeys = list()
-        self.mColumns = list()
+        self.mPrimaryKeys = dict()
+        self.mColumns = dict()
 
     @property
     def FullName(self):

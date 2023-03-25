@@ -50,26 +50,29 @@ class DBWrapper:
         if self.__mCursor is not None:
             self.__mCursor.close()
 
-    def init(self, inCachedRows: int = None) -> list[DBTable]:
+    def init(self, inCachedRows: int = None) -> dict:
         """
         Initializes all the tables with Column, Primary and Foreign keys data
         :param inCachedRows: No of rows' data to cache in a column (Default=None, to cache all)
         """
-        allTables = list()
+        allTables = dict()
         for tableMeta in self.getTablesNames():
-            allTables.append(DBTable(tableMeta[0], tableMeta[1], tableMeta[2]))
-        for table in allTables:
+            table = DBTable(tableMeta[0], tableMeta[1], tableMeta[2])
+            allTables[table.FullName] = table
+        for table in allTables.values():
             # Populates Primary Keys
             for pKey in self.getPrimaryKeyNames(table.mName, table.mCatalog, table.mSchema):
-                table.mPrimaryKeys.append(DBPrimaryKey(pKey[3], pKey[4], pKey[5]))
+                primaryKey = DBPrimaryKey(pKey[3], pKey[4], pKey[5])
+                table.mPrimaryKeys[primaryKey.mName] = primaryKey
             # Populates Column Meta Data
-            for colData in self.getColumns(table.mName, table.mCatalog, table.mSchema):
-                table.mColumns.append(DBColumn(colData[3], colData[5]))
-            # Populates Column Values
-            for rowData in self.getTableData(table.FullName, inCachedRows):
-                assert len(rowData) == len(table.mColumns)
-                for idx, value in enumerate(rowData):
-                    table.mColumns[idx].mValues.append(value)
+            tableData = self.getTableData(table.FullName, inCachedRows)
+            tableColumns = self.getColumns(table.mName, table.mCatalog, table.mSchema)
+            for colIdx, colData in enumerate(tableColumns):
+                column = DBColumn(colData[3], colData[5])
+                for rowData in tableData:
+                    assert len(rowData) == len(tableColumns)
+                    column.addToResultSet(rowData[colIdx])
+                table.mColumns[column.mName] = column
         return allTables
 
     def getTablesNames(self) -> list:

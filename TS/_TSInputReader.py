@@ -9,7 +9,8 @@ import json
 
 from enum import Enum
 
-from .TSException import TSException
+from TS import TSException
+from TS.TestSets._TSTestSet import TSTestSet
 
 from P4Utils import Perforce
 from GenUtility import assure, isNoneOrEmpty
@@ -85,12 +86,11 @@ class TSInput:
                 testDefinitionPath = p4Inst.transformPath(self.__mTestDefinitionsLocation)
                 for name, testDefs in val.items():
                     assert isinstance(testDefs, dict)
-                    self.__mTestDefinitions[name] = dict()
+                    self.__mTestDefinitions[name] = list()
                     for stdTestName, actTestName in testDefs.items():
-                        testSetPath = f'{os.path.join(testDefinitionPath, name, actTestName)}.xml'
-                        if not os.path.exists(testSetPath):
-                            raise TSException(f'{testSetPath} not found')
-                        self.__mTestDefinitions[name][stdTestName] = actTestName
+                        testSet = TSTestSet(name, stdTestName, actTestName)
+                        testSet.init(testDefinitionPath)
+                        self.__mTestDefinitions[name].append(testSet)
 
     @property
     def ConnectionString(self) -> str:

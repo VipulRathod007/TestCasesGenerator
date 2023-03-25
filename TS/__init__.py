@@ -5,6 +5,6 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 # List the classes to be exposed
-from .TSRunner import TSExecutionMode
-from .TSRunner import TSRunner
-from .TSException import TSException
+from ._TSRunner import TSExecutionMode
+from ._TSRunner import TSRunner
+from ._TSException import TSException

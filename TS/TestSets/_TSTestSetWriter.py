@@ -6,8 +6,8 @@
 
 import sys
 
-from TS.TSException import TSException
-from TS.TestSets import TSTestSetFactory
+from TS import TSException
+from TS.TestSets._TSTestSetFactory import TSTestSetFactory
 
 from GenUtility import isNoneOrEmpty
 from MDEF import MDEF

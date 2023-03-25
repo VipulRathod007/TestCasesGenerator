@@ -8,30 +8,30 @@
 from MDEF import MDEF
 from P4Utils import Perforce
 from GenUtility import isNoneOrEmpty
-from TS.TSException import TSException
+from TS import TSException
+from TS.TestSets._TSTestSet import TSTestSet
+from TS.TestSets._TSAbstractTestSets import TSAbstractTestSets
 
-from ._TSAbstractTestSet import TSAbstractTestSet
 
-
-class TSIntegrationTestSets(TSAbstractTestSet):
+class TSIntegrationTestSets(TSAbstractTestSets):
     """
     Represents TSIntegrationTestSet class
     Prepares all Integration TestSets
     """
 
-    def __init__(self, inTestSuite: str, inTestSets: dict, inTouchstoneRoot: str, inMDEF: MDEF, inResultSet: dict):
+    def __init__(self, inTestSuite: str, inTestSets: list[TSTestSet], inTouchstoneRoot: str, inMDEF: MDEF, inResultSet: dict):
         super().__init__(inTestSuite, inTestSets, inTouchstoneRoot, inMDEF, inResultSet)
 
     def create(self):
         """Creates all the test-sets for given test-suite"""
         self.createTestSuite()
-        for testSet, startID in self.mTestSets.items():
+        for testSet in self.mTestSets:
             queries = None
-            if testSet.upper() == 'SQL_SELECT_ALL':
+            if testSet.StandardName.upper() == 'SQL_SELECT_ALL':
                 queries = self.createSelectAll()
-            elif testSet.upper() == 'SQL_PASSDOWN':
+            elif testSet.StandardName.upper() == 'SQL_PASSDOWN':
                 queries = self.createSQLPassdown()
-            self.createTestSet(testSet, queries, startID)
+            self.createTestSet(testSet, queries)
 
     def createSelectAll(self) -> list[str]:
         """Creates the SQL_SELECT_ALL test-set"""
@@ -51,11 +51,13 @@ class TSIntegrationTestSets(TSAbstractTestSet):
 
     def createSQLPassdown(self) -> list[str]:
         """Creates the SQL_PASSDOWN test-sets"""
-        # TODO: Fix me to use Resultsets
 
         def prepare(inTable):
-            query = f'SELECT * FROM {inTable.FullName} ORDER BY ' \
-                    f'{" AND ".join(map(lambda x: x.Name, inTable.PrimaryKeys))}'
+            colValueMap = list()
+            for colName in inTable.ItemEndpointColumnNames:
+                colValues = self.mResultSet[inTable.FullName][colName].getResultSet()
+                colValueMap.append(f'{colName}={colValues[0]}')
+            query = f'SELECT * FROM {inTable.FullName} WHERE {" AND ".join(colValueMap)}'
             return query
 
         queries = list()

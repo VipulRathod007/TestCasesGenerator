@@ -4,8 +4,9 @@
 """ Design patterns are elite irrespective of the language                                                           """
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-from TS.TSException import TSException
-from TS.TestSets import TSIntegrationTestSets
+from TS import TSException
+from TS.TestSets._TSIntegrationTestSets import TSIntegrationTestSets
+from TS.TestSets._TSTestSet import TSTestSet
 
 from GenUtility import isNoneOrEmpty
 from MDEF import MDEF
@@ -33,7 +34,7 @@ class TSTestSetFactory:
     ]
 
     @classmethod
-    def create(cls, inTestSuite: str, inTestSets: list[str], inTouchstoneRoot: str, inMDEF: MDEF, inResultSet: dict):
+    def create(cls, inTestSuite: str, inTestSets: list[TSTestSet], inTouchstoneRoot: str, inMDEF: MDEF, inResultSet: dict):
         if isNoneOrEmpty(inTestSuite):
             raise TSException('Empty Test Definition name provided')
         if inTestSuite.upper() == 'INTEGRATION':

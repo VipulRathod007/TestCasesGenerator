@@ -1,5 +1,5 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""" @file TSRunner.py                                                                                                """
+""" @file _TSRunner.py                                                                                               """
 """ Contains the definition of TSRunner class                                                                        """
 """ Code is a piece of `art`                                                                                         """
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -9,9 +9,10 @@ from enum import Enum
 
 from DB import DBWrapper
 from P4Utils import Perforce
-from .TSException import TSException
-from ._TSInputReader import TSInput, Constants
-from ._TSTouchStoneUtils import TSTouchStoneUtils
+from TS import TSException
+from TS.TestSets import TSTestSetWriter
+from TS._TSInputReader import TSInput, Constants
+from TS._TSTouchStoneUtils import TSTouchStoneUtils
 
 from MDEF import MDEF
 from GenUtility import readFile
@@ -39,9 +40,12 @@ class TSRunner:
         self.__mP4Inst = Perforce()
 
     def run(self, inMode: TSExecutionMode):
+        touchStoneRoot = os.curdir
         mdefDiff = self.__findSchemaDifferences()
         dbTables = DBWrapper(self.__mInput.ConnectionString).init()
-        TSTouchStoneUtils.setup(os.curdir, list(self.__mInput.TestDefinitions.keys()))
+        TSTouchStoneUtils.setup(touchStoneRoot, list(self.__mInput.TestDefinitions.keys()))
+        writer = TSTestSetWriter(self.__mInput.TestDefinitions, touchStoneRoot, mdefDiff, dbTables)
+        writer.write()
 
     def __findSchemaDifferences(self) -> MDEF:
         mdefPath = self.__mP4Inst.transformPath(self.__mInput.MDEFP4Location)
