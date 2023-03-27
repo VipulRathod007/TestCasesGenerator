@@ -6,7 +6,7 @@
 
 import sys
 
-from TS import TSException
+from TS._TSException import TSException
 from TS.TestSets._TSTestSetFactory import TSTestSetFactory
 
 from GenUtility import isNoneOrEmpty

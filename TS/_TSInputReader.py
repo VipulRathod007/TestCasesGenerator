@@ -9,7 +9,7 @@ import json
 
 from enum import Enum
 
-from TS import TSException
+from TS._TSException import TSException
 from TS.TestSets._TSTestSet import TSTestSet
 
 from P4Utils import Perforce
@@ -71,7 +71,8 @@ class TSInput:
                     elif Constants.IsFirstRevision.value == subKey:
                         self.__mIsFirstRevision = bool(subVal == 'true')
                         # Use `ModifiedMDEFLocation` mode with First revision
-                        self.__mDifferenceFindMode = Constants.ModifiedMDEFLocation.value
+                        if self.__mIsFirstRevision:
+                            self.__mDifferenceFindMode = Constants.ModifiedMDEFLocation.value
 
             elif Constants.PerforceLocation.value == key:
                 self.__mMDEFLocation = assure(val, Constants.MDEFLocation.value)

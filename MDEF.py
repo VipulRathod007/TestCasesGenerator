@@ -7,7 +7,6 @@
 import sys
 from enum import Enum
 from abc import abstractmethod
-from collections import OrderedDict
 
 
 class Constants(Enum):
@@ -181,7 +180,8 @@ class ForeignKey(Parsable):
 
     def parse(self, inData):
         """Parses FKeyColumn MDEF Content"""
-        assert isinstance(inData, dict)
+        if not isinstance(inData, dict):
+            raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type dict')
         for key, val in inData.items():
             if Constants.FOREIGNKEYCOLUMNS.value == key:
                 for fKey, pKey in val.items():
@@ -228,7 +228,8 @@ class ColumnMetadata(Parsable):
 
     def parse(self, inData):
         """Parses Column's Metadata content"""
-        assert isinstance(inData, dict)
+        if not isinstance(inData, dict):
+            raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type dict')
         for key, val in inData.items():
             if Constants.SQLTYPE.value == key:
                 self.__mSQLType = val
@@ -312,7 +313,8 @@ class Column(Parsable):
 
     def parse(self, inData):
         """Parses Column MDEF Content"""
-        assert isinstance(inData, dict)
+        if not isinstance(inData, dict):
+            raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type dict')
         for key, val in inData.items():
             if Constants.NAME.value == key:
                 self.__mName = val
@@ -430,34 +432,52 @@ class Column(Parsable):
 
 
 class Table(Parsable):
-    def __init__(self):
+    def __init__(self, inDefaultCatalog: str, inDefaultSchema: str):
         self.__mVirtualTables = list()
         self.__mColumns = list()
         self.__mForeignKeys = list()
         self.__mPrimaryKeys = list()
+        self.__mDefaultCatalog = inDefaultCatalog
+        self.__mDefaultSchema = inDefaultSchema
+        self.__mTableCatalogName = None
         self.__mTableSchemaName = None
         self.__mItemEndpointColumnNames = list()
         self.__mName = None
 
     def parse(self, inData):
         """Parses Tables MDEF Content"""
-        assert isinstance(inData, dict)
+        if not isinstance(inData, dict):
+            raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type dict')
         for key, val in inData.items():
             if Constants.TABLENAME.value == key:
                 self.__mName = val
             elif Constants.TABLESCHEMANAME.value == key:
-                self.__mTableSchemaName = val
+                self.TableSchemaName = val
             elif Constants.ITEMENDPOINTCOLUMNNAMES.value == key:
                 self.__mItemEndpointColumnNames = val
             elif Constants.COLUMNS.value == key:
                 for colData in val:
                     column = Column().parse(colData)
                     self.__mColumns.append(column)
+            elif Constants.PKEYCOLUMN.value == key:
+                for item in val.values():
+                    if not isinstance(item, list):
+                        raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type list of {key}')
+                    for pKeyData in item:
+                        self.PrimaryKeys.append(
+                            PrimaryKey(
+                                pKeyData[Constants.PKCOLUMNNAME.value],
+                                pKeyData[Constants.RELATEDFKCOLUMNS.value]
+                            )
+                        )
             elif Constants.FKEYCOLUMN.value == key:
                 for item in val:
                     self.__mForeignKeys.append(ForeignKey().parse(item))
             elif Constants.VIRTUALTABLES.value == key:
-                self.__mVirtualTables = VirtualTable(self.TableSchemaName, self.Name).parse(val)
+                for vTable in val:
+                    self.__mVirtualTables.extend(
+                        VirtualTable(self.TableCatalogName, self.TableSchemaName, self.Name).parse(vTable)
+                    )
             else:
                 pass
                 # raise Exception(f'Unhandled Key encountered: {key}')
@@ -481,7 +501,13 @@ class Table(Parsable):
 
     @property
     def TableSchemaName(self) -> str:
-        return self.__mTableSchemaName
+        return self.__mDefaultSchema if self.__mTableSchemaName is None or len(self.__mTableSchemaName) == 0 \
+            else self.__mTableSchemaName
+
+    @property
+    def TableCatalogName(self) -> str:
+        return self.__mDefaultCatalog if self.__mTableCatalogName is None or len(self.__mTableCatalogName) == 0 \
+            else self.__mTableCatalogName
 
     @TableSchemaName.setter
     def TableSchemaName(self, inTableSchemaName: str):
@@ -524,25 +550,27 @@ class Table(Parsable):
 
     @property
     def FullName(self) -> str:
-        return f'{self.__mTableSchemaName}{MDEF.cleanName(self.__mName)}'
+        return f'{self.TableCatalogName}.{self.TableSchemaName}.{self.Name}'
 
 
 class VirtualTable(Table):
-    def __init__(self, inSchema: str, inParentTable: str):
-        super().__init__()
+    def __init__(self, inCatalog: str, inSchema: str, inParentTable: str):
+        super().__init__(inCatalog, inSchema)
         self.TableSchemaName = inSchema
         self.__mParentTable = inParentTable
 
     def parse(self, inData):
         """Parses Virtual Table Data"""
-        assert isinstance(inData, dict)
+        if not isinstance(inData, dict):
+            raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type dict')
         virtualTables = list()
         for key, val in inData.items():
             if Constants.TABLENAME.value == key:
-                self.Name = MDEF.cleanName(val)
+                self.Name = val
             elif Constants.PKEYCOLUMN.value == key:
                 for item in val.values():
-                    assert isinstance(item, list)
+                    if not isinstance(item, list):
+                        raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type list of {key}')
                     for pKeyData in item:
                         self.PrimaryKeys.append(
                             PrimaryKey(
@@ -551,20 +579,25 @@ class VirtualTable(Table):
                             )
                         )
             elif Constants.FKEYCOLUMN.value == key:
-                assert isinstance(val, list)
+                if not isinstance(val, list):
+                    raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type list of {key}')
                 for item in val:
                     self.ForeignKeys.append(ForeignKey().parse(item))
             elif Constants.COLUMNS.value == key:
-                assert isinstance(val, list)
+                if not isinstance(val, list):
+                    raise Exception(f'Parse Error at {self.__class__.__name__}: Expected type list of {key}')
                 for item in val:
                     self.Columns.append(
                         Column().parse(item)
                     )
         if Constants.VIRTUALTABLES.value in inData:
             val = inData[Constants.VIRTUALTABLES.value]
-            assert isinstance(val, list)
+            if not isinstance(val, list):
+                raise Exception(f'Parse Error at {self.__class__.__name__}: '
+                                f'Expected type list of {Constants.VIRTUALTABLES.value}')
             for vTable in val:
-                virtualTables.extend(VirtualTable(self.TableSchemaName, self.Name).parse(vTable))
+                virtualTables.extend(VirtualTable(self.TableCatalogName, self.TableSchemaName, self.Name).parse(vTable))
+        virtualTables.append(self)
         return virtualTables
 
 
@@ -572,6 +605,7 @@ class MDEF(Parsable):
     """Represents MDEF class"""
 
     def __init__(self):
+        self.__mDataSource = None
         self.__mContent = None
         self.__mTables = list()
         self.__mParentTableNames = list()
@@ -585,11 +619,14 @@ class MDEF(Parsable):
             sys.exit(1)
 
         self.__mContent = inMDEFContent
-        self.__mTables = list()
         try:
+            if Constants.DATASOURCE.value not in self.__mContent:
+                raise Exception(f'Required key {Constants.DATASOURCE.value} not found in MDEF')
+            self.__mDataSource = self.__mContent[Constants.DATASOURCE.value]
+
             # Parse tables
             for tableData in self.__mContent[Constants.TABLES.value]:
-                table = Table().parse(tableData)
+                table = Table(self.__mDataSource, self.__mDataSource).parse(tableData)
                 self.__mTables.append(table)
                 self.__mParentTableNames.append(table.FullName)
                 self.__mVirtualTables.extend(table.VirtualTables)

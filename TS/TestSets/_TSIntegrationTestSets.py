@@ -8,7 +8,6 @@
 from MDEF import MDEF
 from P4Utils import Perforce
 from GenUtility import isNoneOrEmpty
-from TS import TSException
 from TS.TestSets._TSTestSet import TSTestSet
 from TS.TestSets._TSAbstractTestSets import TSAbstractTestSets
 
@@ -45,25 +44,34 @@ class TSIntegrationTestSets(TSAbstractTestSets):
         for table in self.mMDEF.Tables:
             queries.append(prepare(table))
             for vTable in table.VirtualTables:
-                queries.append(prepare(vTable.FullName))
+                queries.append(prepare(vTable))
 
         return queries
 
     def createSQLPassdown(self) -> list[str]:
         """Creates the SQL_PASSDOWN test-sets"""
 
-        def prepare(inTable):
+        def prepare(inTable, inResultSet):
             colValueMap = list()
             for colName in inTable.ItemEndpointColumnNames:
-                colValues = self.mResultSet[inTable.FullName][colName].getResultSet()
-                colValueMap.append(f'{colName}={colValues[0]}')
-            query = f'SELECT * FROM {inTable.FullName} WHERE {" AND ".join(colValueMap)}'
+                colValues = inResultSet.mColumns[colName].getResultSet()
+                if not isNoneOrEmpty(colValues):
+                    colValueMap.append(f'{colName}={colValues[0]}')
+            query = None
+            if not isNoneOrEmpty(colValueMap):
+                query = f'SELECT * FROM {inTable.FullName} WHERE {" AND ".join(colValueMap)}'
             return query
 
         queries = list()
         for table in self.mMDEF.Tables:
-            queries.append(prepare(table))
+            query = prepare(table, self.mResultSet[table.FullName])
+            if not isNoneOrEmpty(query):
+                queries.append(query)
             for vTable in table.VirtualTables:
-                queries.append(prepare(vTable.FullName))
+                # TODO: Fix in MDEF to have ItemEP Columns in VTables from parent tables
+                vTable.ItemEndpointColumnNames = table.ItemEndpointColumnNames
+                query = prepare(vTable, self.mResultSet[vTable.FullName])
+                if not isNoneOrEmpty(query):
+                    queries.append(query)
 
         return queries

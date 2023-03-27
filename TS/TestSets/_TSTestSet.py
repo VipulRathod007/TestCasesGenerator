@@ -9,7 +9,7 @@ import xml.etree.ElementTree as Etree
 
 from GenUtility import isNoneOrEmpty, readFile
 from P4Utils import Perforce
-from TS import TSException
+from TS._TSException import TSException
 
 
 class TSTestSet:
@@ -31,7 +31,7 @@ class TSTestSet:
         if not os.path.exists(inTestDefinitionLoc):
             raise TSException(f'Invalid Path provided at {self.__class__.__name__}\n'
                               f'{inTestDefinitionLoc}')
-        testSetPath = os.path.join(inTestDefinitionLoc, self.__mTestSuiteName, 'TestSets', self.__mActName)
+        testSetPath = os.path.join(inTestDefinitionLoc, self.__mTestSuiteName, 'TestSets', f'{self.__mActName}.xml')
         if not os.path.exists(testSetPath):
             raise TSException(f'Invalid Path provided at {self.__class__.__name__}\n'
                               f'{testSetPath}')

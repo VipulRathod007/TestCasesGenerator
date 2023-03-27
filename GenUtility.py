@@ -74,12 +74,14 @@ def getEnvVariableValue(inVarName: str):
 
 def isNoneOrEmpty(inVal) -> bool:
     """Checks if the given value is None or Empty"""
-    if isinstance(inVal, str):
+    if inVal is None:
+        return True
+    elif isinstance(inVal, str):
         return inVal is None or len(inVal) == 0
     elif isinstance(inVal, dict):
         return inVal is None or \
                len(inVal) == 0 or \
-               all(map(lambda x, y: isNoneOrEmpty(x) and isNoneOrEmpty(y), inVal.items()))
+               all(map(lambda x: isNoneOrEmpty(x) and isNoneOrEmpty(inVal[x]), inVal))
     elif isinstance(inVal, list):
         return inVal is None or \
                len(inVal) == 0 or \
@@ -99,7 +101,7 @@ def writeFile(inContent: str, inPath: str, inMode: str = 'w'):
         with open(inPath, inMode) as file:
             file.write(inContent.replace('\t', '    '))
     except Exception as error:
-        print(f'Error: {error}')
+        print(f'Error at {__name__}: {error}')
         sys.exit(1)
 
 
@@ -114,6 +116,6 @@ def readFile(inPath: str, inMode: str = 'r'):
         with open(inPath, inMode) as file:
             content = file.read()
     except Exception as error:
-        print(f'Error: {error}')
+        print(f'Error at {__name__}: {error}')
         sys.exit(1)
     return content

@@ -4,12 +4,13 @@
 """ Code is a piece of `art`                                                                                         """
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+import json
 import os
 from enum import Enum
 
 from DB import DBWrapper
 from P4Utils import Perforce
-from TS import TSException
+from TS._TSException import TSException
 from TS.TestSets import TSTestSetWriter
 from TS._TSInputReader import TSInput, Constants
 from TS._TSTouchStoneUtils import TSTouchStoneUtils
@@ -40,12 +41,16 @@ class TSRunner:
         self.__mP4Inst = Perforce()
 
     def run(self, inMode: TSExecutionMode):
-        touchStoneRoot = os.curdir
+        touchStoneRoot = os.path.join(os.path.abspath(os.curdir), 'Output')
         mdefDiff = self.__findSchemaDifferences()
-        dbTables = DBWrapper(self.__mInput.ConnectionString).init()
-        TSTouchStoneUtils.setup(touchStoneRoot, list(self.__mInput.TestDefinitions.keys()))
+        db = DBWrapper(self.__mInput.ConnectionString)
+        dbTables = db.init(mdefDiff.AllTableNames)
+        TSTouchStoneUtils.setup(
+            touchStoneRoot, list(self.__mInput.TestDefinitions.keys()), self.__mInput.ConnectionString
+        )
         writer = TSTestSetWriter(self.__mInput.TestDefinitions, touchStoneRoot, mdefDiff, dbTables)
         writer.write()
+        db.disconnect()
 
     def __findSchemaDifferences(self) -> MDEF:
         mdefPath = self.__mP4Inst.transformPath(self.__mInput.MDEFP4Location)
@@ -62,8 +67,8 @@ class TSRunner:
             olderMDEF = MDEF()
             # Since 0th index will have lower revision representing older mdef
             # while 1st represents the latest one
-            olderMDEF.parse(self.__mP4Inst.readRevision(mdefPath, self.__mInput.CompareRevisions[0]))
+            olderMDEF.parse(json.loads(self.__mP4Inst.readRevision(mdefPath, self.__mInput.CompareRevisions[0])))
             newerMDEF = MDEF()
-            newerMDEF.parse(self.__mP4Inst.readRevision(mdefPath, self.__mInput.CompareRevisions[1]))
+            newerMDEF.parse(json.loads(self.__mP4Inst.readRevision(mdefPath, self.__mInput.CompareRevisions[1])))
 
             return newerMDEF - olderMDEF

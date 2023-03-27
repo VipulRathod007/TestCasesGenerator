@@ -9,7 +9,7 @@ import sys
 
 from abc import ABC, abstractmethod
 
-from TS import TSException
+from TS._TSException import TSException
 from TS.TestSets._TSTestSet import TSTestSet
 from P4Utils import Perforce, PerforceException
 from MDEF import MDEF
@@ -41,10 +41,10 @@ class TSAbstractTestSets(ABC):
         """Creates TestSuite.xml for given test-suite"""
         content = f'<TestSuite Name="{self.mTestSuite}">\n'
         for testSet in self.mTestSets:
-            content += f'<TestSet Name="{testSet.StandardName}" ' \
+            content += f'\t<TestSet Name="{testSet.StandardName}" ' \
                        f'SetFile="{self.mTestSuite}/TestSets/{testSet.ActualName}.xml" />\n'
-        content += '<GenerateResults>true</GenerateResults>\n'
-        content += f'<BaselineDirectory>{self.mTestSuite}\ResultSets</BaselineDirectory>\n'
+        content += '\t<GenerateResults>true</GenerateResults>\n'
+        content += f'\t<BaselineDirectory>{self.mTestSuite}\ResultSets</BaselineDirectory>\n'
         content += '</TestSuite>'
 
         writeFile(content, os.path.join(self.mTouchstoneRoot, self.mTestSuite, 'TestSuite.xml'))

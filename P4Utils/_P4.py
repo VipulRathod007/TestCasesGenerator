@@ -231,9 +231,9 @@ class Perforce:
         try:
             with self.__mP4Instance.connect():
                 if inFileRevision is not None:
-                    fileContent = subprocess.run(
-                        ['print', '-q', f"{os.path.abspath(inFilePath)}#{inFileRevision}"]
-                    ).stdout.decode()
+                    fileContent = subprocess.check_output(
+                        ['p4.exe', 'print', '-q', f"{os.path.abspath(inFilePath)}#{inFileRevision}"]
+                    ).decode()
                 else:
                     fileContent = subprocess.run(['print', '-q', os.path.abspath(inFilePath)]).stdout.decode()
             return fileContent

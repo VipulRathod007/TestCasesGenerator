@@ -4,7 +4,7 @@
 """ Design patterns are elite irrespective of the language                                                           """
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-from TS import TSException
+from TS._TSException import TSException
 from TS.TestSets._TSIntegrationTestSets import TSIntegrationTestSets
 from TS.TestSets._TSTestSet import TSTestSet
 

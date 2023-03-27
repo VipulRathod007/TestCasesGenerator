@@ -9,7 +9,7 @@ import sys
 
 from pyodbc import Cursor, Connection
 
-from _DBNucleus import DBTable, DBColumn, DBPrimaryKey
+from DB._DBNucleus import DBTable, DBColumn, DBPrimaryKey
 from GenUtility import isNoneOrEmpty
 
 
@@ -50,15 +50,20 @@ class DBWrapper:
         if self.__mCursor is not None:
             self.__mCursor.close()
 
-    def init(self, inCachedRows: int = None) -> dict:
+    def init(self, inTables: list[str] = None, inCachedRows: int = None) -> dict:
         """
         Initializes all the tables with Column, Primary and Foreign keys data
+        :param inTables: List of tables to initialize (Default=None, to cache all the Tables)
         :param inCachedRows: No of rows' data to cache in a column (Default=None, to cache all)
         """
+        if isNoneOrEmpty(inTables):
+            inTables = list()
+
         allTables = dict()
         for tableMeta in self.getTablesNames():
             table = DBTable(tableMeta[0], tableMeta[1], tableMeta[2])
-            allTables[table.FullName] = table
+            if table.FullName in inTables:
+                allTables[table.FullName] = table
         for table in allTables.values():
             # Populates Primary Keys
             for pKey in self.getPrimaryKeyNames(table.mName, table.mCatalog, table.mSchema):
@@ -126,6 +131,7 @@ class DBWrapper:
         if isNoneOrEmpty(inTable):
             print(f'Error: Empty Table data provided to {self.__class__}')
             sys.exit(1)
+        print(f'SELECT * FROM {inTable}')
         resultSet = self.Cursor.execute(f'SELECT * FROM {inTable}')
         filteredSet = resultSet.fetchmany(inLimitRows) if inLimitRows is not None else resultSet.fetchall()
         return filteredSet
