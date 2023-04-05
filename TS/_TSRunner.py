@@ -41,15 +41,27 @@ class TSRunner:
         self.__mP4Inst = Perforce()
 
     def run(self, inMode: TSExecutionMode):
+        print('=======================================================================================================')
+        print(f'                     TestCasesGenerator started running with {inMode.name} mode')
+        print('=======================================================================================================')
         touchStoneRoot = os.path.join(os.path.abspath(os.curdir), 'Output')
         mdefDiff = self.__findSchemaDifferences()
         db = DBWrapper(self.__mInput.ConnectionString)
         dbTables = db.init(mdefDiff.AllTableNames)
+        print('=======================================================================================================')
+        print('                                        Database initialized')
+        print('=======================================================================================================')
         TSTouchStoneUtils.setup(
             touchStoneRoot, list(self.__mInput.TestDefinitions.keys()), self.__mInput.ConnectionString
         )
         writer = TSTestSetWriter(self.__mInput.TestDefinitions, touchStoneRoot, mdefDiff, dbTables)
         writer.write()
+        print('=======================================================================================================')
+        print('                                    Testcases generation completed')
+        print('=======================================================================================================')
+
+        if inMode.value == TSExecutionMode.ResultSet.value:
+            TSTouchStoneUtils.run(touchStoneRoot, list(self.__mInput.TestDefinitions.keys()))
         db.disconnect()
 
     def __findSchemaDifferences(self) -> MDEF:

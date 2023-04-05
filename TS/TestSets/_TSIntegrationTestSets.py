@@ -38,7 +38,7 @@ class TSIntegrationTestSets(TSAbstractTestSets):
 
         def prepare(inTable):
             query = f'SELECT * FROM {inTable.FullName} ORDER BY ' \
-                    f'{" AND ".join(map(lambda x: x.Name, inTable.PrimaryKeys))}'
+                    f'{", ".join(map(lambda x: x.Name, inTable.PrimaryKeys))}'
             return query
 
         queries = list()

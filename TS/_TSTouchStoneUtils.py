@@ -6,9 +6,11 @@
 
 import os
 import sys
+import subprocess
 from shutil import copy
 
 from GenUtility import createDir, isNoneOrEmpty, getEnvVariableValue, writeFile
+from TS._TSException import TSException
 
 
 class TSTouchStoneUtils:
@@ -23,8 +25,8 @@ class TSTouchStoneUtils:
         :param inConnectionString: Connection string to be added in the file
         """
         if isNoneOrEmpty(inRoot) or isNoneOrEmpty(inTestDefinitions):
-            print(f'Error: Empty/Invalid input provided to {cls.__class__.__name__}')
-            sys.exit(1)
+            raise TSException(f'Error: Empty/Invalid input provided to {cls.__class__.__name__}')
+
         outputDir = os.path.abspath(inRoot)
         touchstoneDir = getEnvVariableValue('TOUCHSTONE_DIR')
 
@@ -48,8 +50,7 @@ class TSTouchStoneUtils:
         :param inConnectionString: Connection string to be added in the file
         """
         if isNoneOrEmpty(inRoot) or isNoneOrEmpty(inConnectionString):
-            print(f'Error: Empty/Invalid input provided to {cls.__class__.__name__}')
-            sys.exit(1)
+            raise TSException(f'Error: Empty/Invalid input provided to {cls.__class__.__name__}')
 
         testEnvDir = os.path.join(inRoot, 'Envs')
         createDir(testEnvDir)
@@ -59,7 +60,23 @@ class TSTouchStoneUtils:
         content += '<TestEnvironment>\n'
         content += f'\t<ConnectionString>{inConnectionString}</ConnectionString>\n'
         content += '\t<SqlWCharEncoding>UTF-32</SqlWCharEncoding>\n'
-        content += '\t<GenerateResults>false</GenerateResults>\n'
+        content += '\t<GenerateResults>true</GenerateResults>\n'
         content += '</TestEnvironment>'
 
         writeFile(content, os.path.join(testEnvDir, 'TestEnv.xml'))
+
+    @classmethod
+    def run(cls, inRoot: str, inTestSuites: list):
+        """Runs TouchStone for given test-suites"""
+        if isNoneOrEmpty(inRoot) or isNoneOrEmpty(inTestSuites):
+            raise TSException(f'Error: Empty/Invalid input provided to {cls.__class__.__name__}')
+
+        for testSuite in inTestSuites:
+            cmd = f'Touchstone.exe -te Envs\TestEnv.xml -ts {testSuite}\TestSuite.xml -o {testSuite}'
+            try:
+                print(cmd)
+                print('Info: Touchstone started')
+                subprocess.run(cmd, cwd=inRoot, shell=True)
+                print()
+            except Exception as error:
+                raise TSException(str(error))

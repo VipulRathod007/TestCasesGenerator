@@ -29,15 +29,14 @@ def main(inFilePath: str, inMode: str):
 
 
 if __name__ == '__main__':
-    # if len(sys.argv) < 3:
-    #     if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == '-help'):
-    #         help()
-    #     else:
-    #         print("Error: Invalid Input provided\n"
-    #               f"Use python Fluffy.py -h/-help to get help")
-    #     sys.exit(1)
-    # inputFile = sys.argv[1]
-    # mode = sys.argv[2]
+    if len(sys.argv) < 3:
+        if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == '-help'):
+            help()
+        else:
+            print("Error: Invalid Input provided\n"
+                  f"Use python Fluffy.py -h/-help to get help")
+        sys.exit(1)
+    inputFile = sys.argv[1]
+    mode = sys.argv[2]
 
-    main('input.json', '-ts')
-    # main(inputFile, mode)
+    main(inputFile, mode)

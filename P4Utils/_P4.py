@@ -31,7 +31,6 @@ class Perforce:
                 self.__mP4ClientRoot = info[0]['clientRoot']
                 p4v.exception_level = 1
                 self.__mP4Instance = p4v
-                print("Connected to perforce")
         except P4Exception as p4e:
             raise PerforceException("Perforce connection error " + str(p4e))
 

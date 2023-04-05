@@ -129,7 +129,7 @@ class DBWrapper:
         if isNoneOrEmpty(inTable):
             print(f'Error: Empty Table data provided to {self.__class__}')
             sys.exit(1)
-        print(f'SELECT * FROM {inTable}')
+        print(f'Info: Fetching data of {inTable}')
         resultSet = self.Cursor.execute(f'SELECT * FROM {inTable}')
         filteredSet = resultSet.fetchmany(inLimitRows) if inLimitRows is not None else resultSet.fetchall()
         return filteredSet
