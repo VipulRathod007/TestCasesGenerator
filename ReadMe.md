@@ -28,7 +28,7 @@ Generates Testcases and Result-sets of the newly added Tables and StoredProcedur
  4. `TestDefinitionsLocation` - Perforce Location of the `TestDefinitions` directory
  5. `TestSuite` - TestSuite Configurations with the following format.
     - `{TestSuite-Name}`: {
-      `{Conventional-Testset-Name}`: `{Actual-Testset-Name}`
+      `{Conventional-Testset-Name}`: {`ActualName`: `{Actual-Testset-Name}`, `MaxQueriesPerTable`: `{#queires}`}
       }     
  6. `ExternalArguments` - ExternalArguments for Test-suite `SP`
 
