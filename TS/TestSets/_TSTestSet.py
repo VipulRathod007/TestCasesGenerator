@@ -15,13 +15,14 @@ from TS._TSException import TSException
 class TSTestSet:
     """Represents data class for TestSet"""
 
-    def __init__(self, inTestSuiteName: str, inStandardName: str, inActualName: str):
+    def __init__(self, inTestSuiteName: str, inStandardName: str, inActualName: str, inMaxQueriesPerTable: int):
         if isNoneOrEmpty(inStandardName) or isNoneOrEmpty(inActualName):
             raise TSException(f'Empty/Invalid input provided at {self.__class__.__name__}')
         self.__mTestSuiteName = inTestSuiteName
         self.__mStdName = inStandardName
         self.__mActName = inActualName
         self.__mStartID = None
+        self.__mMaxQueriesPerTable = inMaxQueriesPerTable
 
     def init(self, inTestDefinitionLoc: str):
         """
@@ -55,6 +56,10 @@ class TSTestSet:
         if self.__mStartID is None:
             raise TSException(f'Un-initialized TestSet. Call {self.__class__}.init() beforehand')
         return self.__mStartID
+
+    @property
+    def MaxQueriesPerTable(self):
+        return self.__mMaxQueriesPerTable
 
     @property
     def TestSuiteName(self):

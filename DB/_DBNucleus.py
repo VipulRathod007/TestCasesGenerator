@@ -38,7 +38,8 @@ class DBColumn:
         return self.__mValues
 
     def setResultSet(self, inValues: list[str]):
-        pass
+        for val in inValues:
+            self.addToResultSet(val)
 
 
 class DBTable:

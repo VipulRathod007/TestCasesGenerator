@@ -47,8 +47,6 @@ class DBWrapper:
         """Disconnects from DB"""
         if self.__mConnection is not None:
             self.__mConnection.close()
-        if self.__mCursor is not None:
-            self.__mCursor.close()
 
     def init(self, inTables: list[str] = None, inCachedRows: int = None) -> dict:
         """
@@ -157,7 +155,3 @@ class DBWrapper:
         if self.__mConnection is None:
             self.connect()
         return self.__mCursor
-
-
-if __name__ == '__main__':
-    obj = DBWrapper('DSN=Microsoft Shopify;')

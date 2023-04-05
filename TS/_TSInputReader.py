@@ -88,8 +88,10 @@ class TSInput:
                 for name, testDefs in val.items():
                     assert isinstance(testDefs, dict)
                     self.__mTestDefinitions[name] = list()
-                    for stdTestName, actTestName in testDefs.items():
-                        testSet = TSTestSet(name, stdTestName, actTestName)
+                    for stdTestName, testMeta in testDefs.items():
+                        actTestName = testMeta['ActualName']
+                        maxQueriesPerTable = int(testMeta['MaxQueriesPerTable']) if 'MaxQueriesPerTable' in testMeta else 1
+                        testSet = TSTestSet(name, stdTestName, actTestName, maxQueriesPerTable)
                         testSet.init(testDefinitionPath)
                         self.__mTestDefinitions[name].append(testSet)
 

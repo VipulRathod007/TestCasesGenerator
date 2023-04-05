@@ -1,25 +1,54 @@
 {
-    "ConnectionString": "DSN=Microsoft WooCommerce;",
+    "ConnectionString": "DSN=Microsoft Shopify;",
     "DifferenceFindMode": {
-        "CompareTwoRevisions": [],
+        "CompareTwoRevisions": [23, 22],
         "ModifiedMDEFLocation": "c:\\Users\\vrathod\\Perforce\\VR_WPT\\Drivers\\Memphis\\DataSources\\Eloqua\\Common\\Trunk\\Main\\MDEF\\driver-d.mdef",
-        "IsFirstRevision": true
+        "IsFirstRevision": false
     },
     "PerforceLocation": {
-        "MDEFLocation": "//Drivers/Memphis/DataSources/WooCommerce/Common/Trunk/Main/MDEF/driver-d.mdef",
-        "TestDefinitionsLocation": "//Drivers/Memphis/DataSources/WooCommerce/Common/Trunk/Main/Tests/TestDefinitions/"
+        "MDEFLocation": "//Drivers/Memphis/DataSources/Shopify/Common/Maintenance/1.6/MDEF/driver-d.mdef",
+        "TestDefinitionsLocation": "//Drivers/Memphis/DataSources/Shopify/Common/Maintenance/1.6/Tests/TestDefinitions/"
     },
     "TestSuite": {
         "Integration": {
-            "SQL_SELECT_ALL": "SQL_SELECT_ALL"
+            "SQL_SELECT_ALL": {
+                "ActualName": "SQL_SELECT_ALL"
+            },
+            "SQL_PASSDOWN": {
+                "ActualName": "SQL_PASSDOWN"
+            }
         },
         "SQL": {
-            "SQL_AND_OR": "SQL_AND_OR",
-            "SQL_GROUP_BY": "SQL_GROUP_BY",
-            "SQL_IN_BETWEEN": "SQL_IN_BETWEEN",
-            "SQL_LIKE": "SQL_LIKE",
-            "SQL_ORDER_BY": "SQL_ORDER_BY",
-            "SQL_SELECT_TOP": "SQL_SELECT_TOP"
+            "SQL_GROUP_BY": {
+                "ActualName": "SQL_GROUPBY"
+            },
+            "SQL_IN_BETWEEN": {
+                "ActualName": "SQL_IN"
+            },
+            "SQL_ORDER_BY": {
+                "ActualName": "SQL_ORDER",
+                "MaxQueriesPerTable": 3
+            },
+            "SQL_SELECT_TOP": {
+                "ActualName": "SQL_TOP",
+                "MaxQueriesPerTable": 3
+            },
+            "SQL_COLUMNS_1TABLE": {
+                "ActualName": "SQL_COLUMNS_1TABLE",
+                "MaxQueriesPerTable": 5
+            },
+            "SQL_AND_OR": {
+                "ActualName": "SQL_AND_OR",
+                "MaxQueriesPerTable": 3
+            },
+            "SQL_LIKE": {
+                "ActualName": "SQL_LIKE",
+                "MaxQueriesPerTable": 2
+            },
+            "SQL_FUNCTION_1TABLE": {
+                "ActualName": "SQL_FUNCTION_1TABLE",
+                "MaxQueriesPerTable": 3
+            }
         }
     },
     "ExternalArguments": {

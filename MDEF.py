@@ -647,6 +647,10 @@ class MDEF(Parsable):
         return self.__mVirtualTables
 
     @property
+    def AllTables(self):
+        return self.__mTables + self.__mVirtualTables
+
+    @property
     def TableNames(self) -> list[str]:
         return self.__mParentTableNames
 

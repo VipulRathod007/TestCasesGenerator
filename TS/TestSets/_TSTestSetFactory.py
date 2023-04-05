@@ -6,6 +6,7 @@
 
 from TS._TSException import TSException
 from TS.TestSets._TSIntegrationTestSets import TSIntegrationTestSets
+from TS.TestSets._TSSQLTestSets import TSSQLTestSets
 from TS.TestSets._TSTestSet import TSTestSet
 
 from GenUtility import isNoneOrEmpty
@@ -40,8 +41,7 @@ class TSTestSetFactory:
         if inTestSuite.upper() == 'INTEGRATION':
             return TSIntegrationTestSets(inTestSuite, inTestSets, inTouchstoneRoot, inMDEF, inResultSet)
         elif inTestSuite.upper() == 'SQL':
-            # TODO: Fix me
-            pass
+            return TSSQLTestSets(inTestSuite, inTestSets, inTouchstoneRoot, inMDEF, inResultSet)
         elif inTestSuite.upper() == 'SP':
             # TODO: Fix me
             pass

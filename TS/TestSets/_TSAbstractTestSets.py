@@ -56,7 +56,7 @@ class TSAbstractTestSets(ABC):
         :param inQueries: List of queries for given test-set
         """
         if isNoneOrEmpty(inQueries):
-            raise TSException('Empty inputs are not considered')
+            raise TSException(f'Empty list of Queries are not considered at {self.__class__.__name__}')
         if all(map(lambda x: x.ActualName != inTestSet.ActualName, self.mTestSets)):
             raise TSException(f'{inTestSet.ActualName} can not be created for {self.mTestSuite}')
 

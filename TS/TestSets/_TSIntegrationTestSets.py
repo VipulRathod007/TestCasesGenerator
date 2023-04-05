@@ -30,7 +30,8 @@ class TSIntegrationTestSets(TSAbstractTestSets):
                 queries = self.createSelectAll()
             elif testSet.StandardName.upper() == 'SQL_PASSDOWN':
                 queries = self.createSQLPassdown()
-            self.createTestSet(testSet, queries)
+            if not isNoneOrEmpty(queries):
+                self.createTestSet(testSet, queries)
 
     def createSelectAll(self) -> list[str]:
         """Creates the SQL_SELECT_ALL test-set"""
