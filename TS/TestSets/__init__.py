@@ -5,4 +5,5 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 # List the classes to be exposed
-from ._TSTestSetWriter import TSTestSetWriter
+from TS.TestSets._TSTestSet import TSTestSet
+from TS.TestSets._TSTestSetWriter import TSTestSetWriter

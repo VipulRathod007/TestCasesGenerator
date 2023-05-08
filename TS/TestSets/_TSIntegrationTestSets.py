@@ -69,7 +69,7 @@ class TSIntegrationTestSets(TSAbstractTestSets):
             if not isNoneOrEmpty(query):
                 queries.append(query)
             for vTable in table.VirtualTables:
-                # TODO: Fix in MDEF to have ItemEP Columns in VTables from parent tables
+                # TODO: Fix in MDEF class to have ItemEP Columns in VTables from parent tables
                 vTable.ItemEndpointColumnNames = table.ItemEndpointColumnNames
                 query = prepare(vTable, self.mResultSet[vTable.FullName])
                 if not isNoneOrEmpty(query):

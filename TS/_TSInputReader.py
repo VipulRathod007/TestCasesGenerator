@@ -9,8 +9,8 @@ import json
 
 from enum import Enum
 
-from TS._TSException import TSException
-from TS.TestSets._TSTestSet import TSTestSet
+from TS import TSException
+from TS.TestSets import TSTestSet
 
 from P4Utils import Perforce
 from GenUtility import assure, isNoneOrEmpty

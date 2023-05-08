@@ -10,10 +10,10 @@ from enum import Enum
 
 from DB import DBWrapper
 from P4Utils import Perforce
-from TS._TSException import TSException
+from TS import TSException
 from TS.TestSets import TSTestSetWriter
-from TS._TSInputReader import TSInput, Constants
-from TS._TSTouchStoneUtils import TSTouchStoneUtils
+from TS import TSInput, Constants
+from TS import TSTouchStoneUtils
 
 from MDEF import MDEF
 from GenUtility import readFile
